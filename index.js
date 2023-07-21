@@ -1,5 +1,12 @@
-import { tweetsData } from './data.js'
+import { tweetsData as data } from './data.js'
 import { v4 as uuidv4 } from 'https://jspm.dev/uuid';
+let tweetsData = []
+
+if (localStorage.getItem('tweetsData')){
+    tweetsData = JSON.parse(localStorage.getItem('tweetsData'))
+}else{
+    tweetsData = data
+}
 
 document.addEventListener('click', function(e){
     if(e.target.dataset.like){
@@ -13,6 +20,7 @@ document.addEventListener('click', function(e){
     }
     else if(e.target.id === 'tweet-btn'){
         handleTweetBtnClick()
+        localStorage.setItem('tweetsData', JSON.stringify(tweetsData))
     }
     else if(e.target.dataset.replayptost){
         hadleReplaypost(e.target.dataset.replayptost)
@@ -20,9 +28,11 @@ document.addEventListener('click', function(e){
     else if (e.target.dataset.sendreplay){
         handelSendReplay(e.target.dataset.sendreplay)
         handleReplyClick(e.target.dataset.sendreplay)
+        localStorage.setItem('tweetsData', JSON.stringify(tweetsData))
     }
     else if (e.target.dataset.delete){
         handleDeleteClick(e.target.dataset.delete)
+        localStorage.removeItem('tweetsData')
     }
 })
 
@@ -44,10 +54,12 @@ function handelSendReplay(tweetId){
     const targetTweetObj = tweetsData.filter(function(tweet){
         return tweet.uuid === tweetId
     })[0]
-    targetTweetObj.replies.unshift({
+    const myReplies = {
         handle: `@Scrimba`,
         profilePic: `images/scrimbalogo.png`,
-        tweetText: document.querySelector(`#inputreplay-${tweetId}`).value})
+        tweetText: document.querySelector(`#inputreplay-${tweetId}`).value}
+
+    targetTweetObj.replies.unshift(myReplies) 
     render()
 }
 
@@ -200,4 +212,5 @@ function render(){
 }
 
 render()
+
 
